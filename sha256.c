@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 typedef unsigned int u32;
 
 u32 h0 = 0x6a09e667u;
@@ -22,7 +24,8 @@ u32 k[64] = {
 
 u32* sha256(u32* message, u32 len){
     u32 len_bit = len * 32;
-    u32 padding = 1 + 512 - ((len_bit + 1) + 64) % 512;
+    u32 k = 512 - (len_bit + 1 + 64) % 512;
+    u32 padding = 1 + k + 64;
     printf("padding %u\n", padding);
     printf("resulting message len %u\n", len_bit + padding);
     // add bit 1
