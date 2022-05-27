@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef unsigned int u32;
 
@@ -24,17 +25,37 @@ u32 k[64] = {
     0x748f82eeu, 0x78a5636fu, 0x84c87814u, 0x8cc70208u, 0x90befffau, 0xa4506cebu, 0xbef9a3f7u, 0xc67178f2u
 };
 
-u32* sha256(u32* message, u32 len){
+u32* pad(u32* message, u32 len){
     u32 len_bit = len * 32;
     u32 k = 512 - (len_bit + 1 + 64) % 512;
     u32 padding = 1 + k + 64;
+    printf("k %u\n", k);
     printf("padding %u\n", padding);
     printf("resulting message len %u\n", len_bit + padding);
     u32 len_bit_padded = len_bit + padding;
     u32* message_padded = (u32*) malloc(len_bit_padded / 8);
+    // copy message in message_padded
+    for (int i = 0; i < len; i++){
+        message_padded[i] = message[i];
+    }
+    u32 len_padded = len_bit_padded / 32;
+    // append [1 0 0 0 ..... len_bit (as 64-bit big-endian)]
+    for (int i = len; i < len_padded; i++){
+        message_padded[i] = message[i];
+    }
     // add bit 1
-    
+    //message_padded[len + 1] = 0x10000000;
+    message_padded[len + 1] = 0x00000001;
     // add k bits 0 such that the resulting message length (in bits) is congruent to 448 (mod 512)
+    for (int i = 1; i < (k + 1) / 32; i++){
+        message_padded[len + 1 + i] = 0x00000000;
+    }
+    
+    return message_padded;
+}
+
+u32* sha256(u32* message, u32 len){
+    message = pad(message, len);
 }
 
 void main(){
