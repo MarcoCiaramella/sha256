@@ -2,7 +2,7 @@
 
 typedef unsigned int u32;
 
-#define swap_endianess(val) (((val>>24)&0xff) | ((val<<8)&0xff0000) | ((val>>8)&0xff00) | ((val<<24)&0xff000000))
+#define swap_endianess(val) (((val>>24u)&0xffu) | ((val<<8u)&0xff0000u) | ((val>>8u)&0xff00u) | ((val<<24u)&0xff000000u))
 
 u32 h0 = 0x6a09e667u;
 u32 h1 = 0xbb67ae85u;
