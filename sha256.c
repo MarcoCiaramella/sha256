@@ -2,8 +2,11 @@
 #include <stdlib.h>
 
 typedef unsigned int u32;
+typedef unsigned long u64;
 
-#define swap_endianess(val) (((val>>24u)&0xffu) | ((val<<8u)&0xff0000u) | ((val>>8u)&0xff00u) | ((val<<24u)&0xff000000u))
+#define swap_endianess32(val) (((val>>24u) & 0xffu) | ((val>>8u) & 0xff00u) | ((val<<8u) & 0xff0000u) | ((val<<24u) & 0xff000000u))
+// TODO
+#define swap_endianess64(val) (((val>>24u) & 0xffu) | ((val>>8u) & 0xff00u) | ((val<<8u) & 0xff0000u) | ((val<<24u) & 0xff000000u))
 
 u32 h0 = 0x6a09e667u;
 u32 h1 = 0xbb67ae85u;
@@ -39,18 +42,19 @@ u32* pad(u32* message, u32 len){
         message_padded[i] = message[i];
     }
     u32 len_padded = len_bit_padded / 32;
-    // append [1 0 0 0 ..... len_bit (as 64-bit big-endian)]
     for (int i = len; i < len_padded; i++){
         message_padded[i] = message[i];
     }
-    // add bit 1
-    //message_padded[len + 1] = 0x10000000;
-    message_padded[len + 1] = 0x00000001;
-    // add k bits 0 such that the resulting message length (in bits) is congruent to 448 (mod 512)
+    // append [1 0 0 0 ..... len_bit (as 64-bit big-endian)]
+    // append bit 1
+    message_padded[len + 1] = 0x00000080u;
+    // append k bits 0 such that the resulting message length (in bits) is congruent to 448 (mod 512)
     for (int i = 1; i < (k + 1) / 32; i++){
-        message_padded[len + 1 + i] = 0x00000000;
+        message_padded[len + 1 + i] = 0x00000000u;
     }
-    
+    // append len_bit as 64-bit big-endian
+    u64* last = &(message_padded[len_padded - 2]);
+    *last = swap_endianess64((u64)len_bit);
     return message_padded;
 }
 
