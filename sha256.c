@@ -30,7 +30,10 @@ u32* sha256(u32* message, u32 len){
     u32 padding = 1 + k + 64;
     printf("padding %u\n", padding);
     printf("resulting message len %u\n", len_bit + padding);
+    u32 len_bit_padded = len_bit + padding;
+    u32* message_padded = (u32*) malloc(len_bit_padded / 8);
     // add bit 1
+    
     // add k bits 0 such that the resulting message length (in bits) is congruent to 448 (mod 512)
 }
 
