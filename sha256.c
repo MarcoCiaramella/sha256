@@ -21,10 +21,15 @@ u32 k[64] = {
 };
 
 u32* sha256(u32* message, u32 len){
-    u32 len_bit = len * 32 + 1;
+    u32 len_bit = len * 32;
+    u32 padding = 1 + 512 - ((len_bit + 1) + 64) % 512;
+    printf("padding %u\n", padding);
+    printf("resulting message len %u\n", len_bit + padding);
     // add bit 1
     // add k bits 0 such that the resulting message length (in bits) is congruent to 448 (mod 512)
 }
 
 void main(){
+    u32 message[4] = {0,1,2,3};
+    sha256(message, 4);
 }
