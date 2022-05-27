@@ -2,6 +2,8 @@
 
 typedef unsigned int u32;
 
+#define swap_endianess(val) (((val>>24)&0xff) | ((val<<8)&0xff0000) | ((val>>8)&0xff00) | ((val<<24)&0xff000000))
+
 u32 h0 = 0x6a09e667u;
 u32 h1 = 0xbb67ae85u;
 u32 h2 = 0x3c6ef372u;
@@ -34,5 +36,6 @@ u32* sha256(u32* message, u32 len){
 
 void main(){
     u32 message[4] = {0,1,2,3};
+    printf("3 %u\n", swap_endianess(3));
     sha256(message, 4);
 }
