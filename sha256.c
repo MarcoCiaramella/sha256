@@ -5,8 +5,7 @@ typedef unsigned int u32;
 typedef unsigned long u64;
 
 #define swap_endianess32(val) (((val>>24u) & 0xffu) | ((val>>8u) & 0xff00u) | ((val<<8u) & 0xff0000u) | ((val<<24u) & 0xff000000u))
-// TODO
-#define swap_endianess64(val) (((val>>24u) & 0xffu) | ((val>>8u) & 0xff00u) | ((val<<8u) & 0xff0000u) | ((val<<24u) & 0xff000000u))
+#define swap_endianess64(val) (((val>>56) & 0xffu) | ((val>>40) & 0xff00u) | ((val>>24) & 0xff0000u) | ((val>>8) & 0xff000000u) | ((val<<8) & 0xff00000000u) | ((val<<24) & 0xff0000000000u) | ((val<<40) & 0xff000000000000u) | ((val<<56) & 0xff00000000000000u))
 
 u32 h0 = 0x6a09e667u;
 u32 h1 = 0xbb67ae85u;
