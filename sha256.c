@@ -54,15 +54,27 @@ u32* pad(u32* message, u32 len){
     // append len_bit as 64-bit big-endian
     u64* last = (u64*) &(message_padded[len_padded - 2]);
     *last = swap_endianess64((u64)len_bit);
+
+    // debug
+    printf("last LE %llu\n", (u64)len_bit);
+    printf("last BE %llu\n", *last);
+    printf("0x");
+    for (int i = 0; i < len_padded * 4; i++){
+        printf("%hhx", ((char*)message_padded)[i]);
+    }
+    printf("\n");
+    //
+
+
     return message_padded;
 }
 
 u32* sha256(u32* message, u32 len){
     message = pad(message, len);
+    return message;
 }
 
 void main(){
     u32 message[4] = {0,1,2,3};
-    printf("3 %llu\n", swap_endianess64(3ull));
     sha256(message, 4);
 }
