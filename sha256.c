@@ -33,23 +33,21 @@ u32* pad(u32* message, u32 len){
     u32 padding = 1 + k + 64;
     printf("k %u\n", k);
     printf("padding %u\n", padding);
-    printf("resulting message len %u\n", len_bit + padding);
     u32 len_bit_padded = len_bit + padding;
+    printf("resulting message len %u bit\n", len_bit_padded);
     u32* message_padded = (u32*) malloc(len_bit_padded / 8);
     // copy message in message_padded
     for (int i = 0; i < len; i++){
         message_padded[i] = message[i];
     }
     u32 len_padded = len_bit_padded / 32;
-    for (int i = len; i < len_padded; i++){
-        message_padded[i] = message[i];
-    }
+    printf("len_padded %u\n", len_padded);
     // append [1 0 0 0 ..... len_bit (as 64-bit big-endian)]
     // append bit 1
-    message_padded[len + 1] = 0x00000080u;
+    message_padded[len] = 0x00000080u;
     // append k bits 0 such that the resulting message length (in bits) is congruent to 448 (mod 512)
     for (int i = 1; i < (k + 1) / 32; i++){
-        message_padded[len + 1 + i] = 0x00000000u;
+        message_padded[len + i] = 0x00000000u;
     }
     // append len_bit as 64-bit big-endian
     u64* last = (u64*) &(message_padded[len_padded - 2]);
@@ -60,11 +58,15 @@ u32* pad(u32* message, u32 len){
     printf("last BE %llu\n", *last);
     printf("0x");
     for (int i = 0; i < len_padded * 4; i++){
-        printf("%hhx", ((char*)message_padded)[i]);
+        printf("%02hhx", ((char*)message_padded)[i]);
     }
     printf("\n");
+    for (int i = 0; i < len_padded - 2; i++){
+        printf("%u-", message_padded[i]);
+    }
+    printf("%llu", *((u64*) &(message_padded[len_padded - 2])));
+    printf("\n");
     //
-
 
     return message_padded;
 }
@@ -75,6 +77,6 @@ u32* sha256(u32* message, u32 len){
 }
 
 void main(){
-    u32 message[4] = {0,1,2,3};
+    u32 message[4] = {1,2};
     sha256(message, 4);
 }
