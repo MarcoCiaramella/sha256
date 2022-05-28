@@ -2,10 +2,10 @@
 #include <stdlib.h>
 
 typedef unsigned int u32;
-typedef unsigned long u64;
+typedef unsigned long long u64;
 
 #define swap_endianess32(val) (((val>>24u) & 0xffu) | ((val>>8u) & 0xff00u) | ((val<<8u) & 0xff0000u) | ((val<<24u) & 0xff000000u))
-#define swap_endianess64(val) (((val>>56) & 0xffu) | ((val>>40) & 0xff00u) | ((val>>24) & 0xff0000u) | ((val>>8) & 0xff000000u) | ((val<<8) & 0xff00000000u) | ((val<<24) & 0xff0000000000u) | ((val<<40) & 0xff000000000000u) | ((val<<56) & 0xff00000000000000u))
+#define swap_endianess64(val) (((val>>56ull) & 0xffull) | ((val>>40ull) & 0xff00ull) | ((val>>24ull) & 0xff0000ull) | ((val>>8ull) & 0xff000000ull) | ((val<<8ull) & 0xff00000000ull) | ((val<<24ull) & 0xff0000000000ull) | ((val<<40ull) & 0xff000000000000ull) | ((val<<56ull) & 0xff00000000000000ull))
 
 u32 h0 = 0x6a09e667u;
 u32 h1 = 0xbb67ae85u;
@@ -52,7 +52,7 @@ u32* pad(u32* message, u32 len){
         message_padded[len + 1 + i] = 0x00000000u;
     }
     // append len_bit as 64-bit big-endian
-    u64* last = &(message_padded[len_padded - 2]);
+    u64* last = (u64*) &(message_padded[len_padded - 2]);
     *last = swap_endianess64((u64)len_bit);
     return message_padded;
 }
@@ -63,6 +63,6 @@ u32* sha256(u32* message, u32 len){
 
 void main(){
     u32 message[4] = {0,1,2,3};
-    printf("3 %u\n", swap_endianess(3));
+    printf("3 %llu\n", swap_endianess64(3ull));
     sha256(message, 4);
 }
