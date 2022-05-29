@@ -1,11 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 typedef unsigned int u32;
 typedef unsigned long long u64;
 
+
 #define swap_endianess32(val) (((val>>24u) & 0xffu) | ((val>>8u) & 0xff00u) | ((val<<8u) & 0xff0000u) | ((val<<24u) & 0xff000000u))
+
 #define swap_endianess64(val) (((val>>56ull) & 0xffull) | ((val>>40ull) & 0xff00ull) | ((val>>24ull) & 0xff0000ull) | ((val>>8ull) & 0xff000000ull) | ((val<<8ull) & 0xff00000000ull) | ((val<<24ull) & 0xff0000000000ull) | ((val<<40ull) & 0xff000000000000ull) | ((val<<56ull) & 0xff00000000000000ull))
+
+#define shw(x, n) ((x << (n & 31u)) & 0xffffffffu)
+
+#define r(x, n) ((x >> n) | shw(x, 32u - n))
+
+#define s0(x) (r(x, 7u) ^ r(x, 18u) ^ (x >> 3u))
+
+#define s1(x) (r(x, 17u) ^ r(x, 19u) ^ (x >> 10u))
+
 
 u32 h0 = 0x6a09e667u;
 u32 h1 = 0xbb67ae85u;
@@ -76,10 +88,13 @@ void process(u32* message, u32 len){
     u32 num_chunks = (len * 4 * 8) / 512u;
     for (int i = 0; i < num_chunks; i++){
         u32* chunk = message + (i * (512u/32u));
-        u32 w[16];
+        u32 w[64];
         for (int j = 0; j < 16; j++){
             // to big-endian
             w[j] = swap_endianess32(chunk[j]);
+        }
+        for (int j = 16; j < 64; j++){
+            w[i] = w[i-16] + s0(w[i-15]) + w[i-7] + s1(w[i-2]);
         }
     }
 }
