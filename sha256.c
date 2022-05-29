@@ -79,7 +79,7 @@ u32* pad(u32* message, u32* plen){
     // debug
     printf("last LE %llu\n", (u64)len_bit);
     printf("last BE %llu\n", *last);
-    printf("0x");
+    printf("message_padded 0x");
     for (int i = 0; i < len_padded * 4; i++){
         printf("%02hhx", ((char*)message_padded)[i]);
     }
@@ -147,13 +147,19 @@ u32* sha256(u32* message, u32 len){
 void main(){
     //u32 message[2] = {1,2};
     //u32* hash = sha256(message, 2);
-    u32 message[1] = {0xf71ac842u};
-    u32* hash = sha256(message, 1);
+
+    u32 message = 0xf71ac841u;
+    printf("%x\n", message);
+    char* pmessage = (char*) &message;
+
     printf("message 0x");
-    for (int i = 0; i < 8; i++){
-        printf("%02hhx", ((char*)message)[i]);
+    for (int i = 3; i >= 0; i--){
+        printf("%02hhx", pmessage[i]);
     }
     printf("\n");
+
+    u32* hash = sha256(&message, 1);
+
     printf("hash 0x");
     for (int i = 0; i < 256/8; i++){
         printf("%02hhx", ((char*)hash)[i]);
