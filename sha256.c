@@ -77,6 +77,6 @@ u32* sha256(u32* message, u32 len){
 }
 
 void main(){
-    u32 message[4] = {1,2};
-    sha256(message, 4);
+    u32 message[2] = {1,2};
+    sha256(message, 2);
 }
