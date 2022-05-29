@@ -75,6 +75,14 @@ u32* pad(u32* message, u32* plen){
     return message_padded;
 }
 
+void print_hash(char* tag, u32* hash){
+    printf("%s 0x", tag);
+    for (int i = 0; i < 256/8; i++){
+        printf("%02hhx", ((u8*)hash)[i]);
+    }
+    printf("\n");
+}
+
 u32* process(u32* message, u32 len){
     u32* hash = (u32*) malloc(4*8);
     hash[0] = 0x6a09e667u;
@@ -142,7 +150,8 @@ u32* process(u32* message, u32 len){
 }
 
 u32* sha256(u32* message, u32 len){
-    return process(pad(message, &len), len);
+    message = pad(message, &len);
+    return process(message, len);
 }
 
 void main(){
@@ -160,9 +169,5 @@ void main(){
     printf("\n");
 
     u32* hash = sha256(&message, 1);
-
-    printf("hash 0x");
-    for (int i = 0; i < 256/8; i++){
-        printf("%02hhx", ((u8*)hash)[i]);
-    }
+    print_hash("hash", hash);
 }
