@@ -145,6 +145,17 @@ u32* sha256(u32* message, u32 len){
 }
 
 void main(){
-    u32 message[2] = {1,2};
-    sha256(message, 2);
+    //u32 message[2] = {1,2};
+    //u32* hash = sha256(message, 2);
+    u32 message[1] = {0xf71ac842u};
+    u32* hash = sha256(message, 1);
+    printf("message 0x");
+    for (int i = 0; i < 8; i++){
+        printf("%02hhx", ((char*)message)[i]);
+    }
+    printf("\n");
+    printf("hash 0x");
+    for (int i = 0; i < 256/8; i++){
+        printf("%02hhx", ((char*)hash)[i]);
+    }
 }
