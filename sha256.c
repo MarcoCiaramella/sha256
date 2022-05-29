@@ -49,7 +49,8 @@ u32 k[64] = {
     0x748f82eeu, 0x78a5636fu, 0x84c87814u, 0x8cc70208u, 0x90befffau, 0xa4506cebu, 0xbef9a3f7u, 0xc67178f2u
 };
 
-u32* pad(u32* message, u32 len){
+u32* pad(u32* message, u32* plen){
+    u32 len = *plen;
     u32 len_bit = len * 32;
     u32 k = 512 - (len_bit + 1 + 64) % 512;
     u32 padding = 1 + k + 64;
@@ -90,6 +91,7 @@ u32* pad(u32* message, u32 len){
     printf("\n");
     //
 
+    *plen = len_padded;
     return message_padded;
 }
 
@@ -139,8 +141,7 @@ u32* process(u32* message, u32 len){
 }
 
 u32* sha256(u32* message, u32 len){
-    message = pad(message, len);
-    return message;
+    return process(pad(message, &len), len);
 }
 
 void main(){
