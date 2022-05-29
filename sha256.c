@@ -14,19 +14,29 @@ typedef unsigned long long u64;
 
 #define r(x, n) ((x >> n) | shw(x, 32u - n))
 
-#define s0(x) (r(x, 7u) ^ r(x, 18u) ^ (x >> 3u))
+#define g0(x) (r(x, 7u) ^ r(x, 18u) ^ (x >> 3u))
 
-#define s1(x) (r(x, 17u) ^ r(x, 19u) ^ (x >> 10u))
+#define g1(x) (r(x, 17u) ^ r(x, 19u) ^ (x >> 10u))
+
+#define s0(x) (r(x, 2u) ^ r(x, 13u) ^ r(x, 22u))
+
+#define s1(x) (r(x, 6u) ^ r(x, 11u) ^ r(x, 25u))
+
+#define maj(a, b, c) ((a & b) ^ (a & c) ^ (b & c))
+
+#define ch(e, f, g) ((e & f) ^ ((~e) & g))
 
 
-u32 h0 = 0x6a09e667u;
-u32 h1 = 0xbb67ae85u;
-u32 h2 = 0x3c6ef372u;
-u32 h3 = 0xa54ff53au;
-u32 h4 = 0x510e527fu;
-u32 h5 = 0x9b05688cu;
-u32 h6 = 0x1f83d9abu;
-u32 h7 = 0x5be0cd19u;
+u32 hash[8] = {
+    0x6a09e667u,
+    0xbb67ae85u,
+    0x3c6ef372u,
+    0xa54ff53au,
+    0x510e527fu,
+    0x9b05688cu,
+    0x1f83d9abu,
+    0x5be0cd19u
+};
 
 u32 k[64] = {
     0x428a2f98u, 0x71374491u, 0xb5c0fbcfu, 0xe9b5dba5u, 0x3956c25bu, 0x59f111f1u, 0x923f82a4u, 0xab1c5ed5u,
@@ -83,7 +93,7 @@ u32* pad(u32* message, u32 len){
     return message_padded;
 }
 
-void process(u32* message, u32 len){
+u32* process(u32* message, u32 len){
     // len expressed as number of u32
     u32 num_chunks = (len * 4 * 8) / 512u;
     for (int i = 0; i < num_chunks; i++){
@@ -94,9 +104,38 @@ void process(u32* message, u32 len){
             w[j] = swap_endianess32(chunk[j]);
         }
         for (int j = 16; j < 64; j++){
-            w[i] = w[i-16] + s0(w[i-15]) + w[i-7] + s1(w[i-2]);
+            w[j] = w[j-16] + g0(w[j-15]) + w[j-7] + g1(w[j-2]);
         }
+        u32 a = hash[0];
+        u32 b = hash[1];
+        u32 c = hash[2];
+        u32 d = hash[3];
+        u32 e = hash[4];
+        u32 f = hash[5];
+        u32 g = hash[6];
+        u32 h = hash[7];
+        for (int j = 0; j < 64; j++){
+            u32 t2 = s0(a) + maj(a, b, c);
+            u32 t1 = h + s1(e) + ch(e, f, g) + k[j] + w[j];
+            h = g;
+            g = f;
+            f = e;
+            e = d + t1;
+            d = c;
+            c = b;
+            b = a;
+            a = t1 + t2;
+        }
+        hash[0] += a;
+        hash[1] += b;
+        hash[2] += c;
+        hash[3] += d;
+        hash[4] += e;
+        hash[5] += f;
+        hash[6] += g;
+        hash[7] += h;
     }
+    return hash;
 }
 
 u32* sha256(u32* message, u32 len){
