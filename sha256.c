@@ -4,6 +4,7 @@
 
 typedef unsigned int u32;
 typedef unsigned long long u64;
+typedef unsigned char u8;
 
 
 #define swap_endianess32(val) (((val>>24u) & 0xffu) | ((val>>8u) & 0xff00u) | ((val<<8u) & 0xff0000u) | ((val<<24u) & 0xff000000u))
@@ -81,7 +82,7 @@ u32* pad(u32* message, u32* plen){
     printf("last BE %llu\n", *last);
     printf("message_padded 0x");
     for (int i = 0; i < len_padded * 4; i++){
-        printf("%02hhx", ((char*)message_padded)[i]);
+        printf("%02hhx", ((u8*)message_padded)[i]);
     }
     printf("\n");
     for (int i = 0; i < len_padded - 2; i++){
@@ -150,7 +151,7 @@ void main(){
 
     u32 message = 0xf71ac841u;
     printf("%x\n", message);
-    char* pmessage = (char*) &message;
+    u8* pmessage = (u8*) &message;
 
     printf("message 0x");
     for (int i = 3; i >= 0; i--){
@@ -162,6 +163,6 @@ void main(){
 
     printf("hash 0x");
     for (int i = 0; i < 256/8; i++){
-        printf("%02hhx", ((char*)hash)[i]);
+        printf("%02hhx", ((u8*)hash)[i]);
     }
 }
