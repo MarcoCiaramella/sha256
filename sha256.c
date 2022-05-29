@@ -71,6 +71,19 @@ u32* pad(u32* message, u32 len){
     return message_padded;
 }
 
+void process(u32* message, u32 len){
+    // len expressed as number of u32
+    u32 num_chunks = (len * 4 * 8) / 512u;
+    for (int i = 0; i < num_chunks; i++){
+        u32* chunk = message + (i * (512u/32u));
+        u32 w[16];
+        for (int j = 0; j < 16; j++){
+            // to big-endian
+            w[j] = swap_endianess32(chunk[j]);
+        }
+    }
+}
+
 u32* sha256(u32* message, u32 len){
     message = pad(message, len);
     return message;
