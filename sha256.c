@@ -146,6 +146,14 @@ u32* process(u32* message, u32 len){
         hash[6] += g;
         hash[7] += h;
     }
+    hash[0] = swap_endianess32(hash[0]);
+    hash[1] = swap_endianess32(hash[1]);
+    hash[2] = swap_endianess32(hash[2]);
+    hash[3] = swap_endianess32(hash[3]);
+    hash[4] = swap_endianess32(hash[4]);
+    hash[5] = swap_endianess32(hash[5]);
+    hash[6] = swap_endianess32(hash[6]);
+    hash[7] = swap_endianess32(hash[7]);
     return hash;
 }
 
@@ -158,7 +166,7 @@ void main(){
     //u32 message[2] = {1,2};
     //u32* hash = sha256(message, 2);
 
-    u32 message = 0xf71ac841u;
+    u32 message = 1u;
     printf("%x\n", message);
     u8* pmessage = (u8*) &message;
 
