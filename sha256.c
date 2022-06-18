@@ -31,16 +31,16 @@ typedef unsigned char u8;
 
 u32* pad(u32* message, u32* plen){
     u32 len = *plen;
-    u32 len_bit = len * 32;
-    u32 k = 512 - (len_bit + 1 + 64) % 512;
+    u64 len_bit = len * 32;
+    u32 k = 512 - (u32) ((len_bit + 1 + 64) % 512);
     u32 padding = 1 + k + 64;
-    u32 len_bit_padded = len_bit + padding;
+    u64 len_bit_padded = len_bit + padding;
     u32* message_padded = (u32*) malloc(len_bit_padded / 8);
     // copy message in message_padded
     for (int i = 0; i < len; i++){
         message_padded[i] = message[i];
     }
-    u32 len_padded = len_bit_padded / 32;
+    u32 len_padded = (u32) (len_bit_padded / 32);
     // append [1 0 0 0 ..... len_bit (as 64-bit big-endian)]
     // append bit 1
     message_padded[len] = 0x00000080u;
@@ -144,7 +144,7 @@ u32* sha256(u32* message, u32 len){
 }
 
 void main(){
-    u32 message = 1u;
-    u32* hash = sha256(&message, 1);
+    u32 message[1] = {1u};
+    u32* hash = sha256(message, 1);
     print_hash("hash", hash);
 }
